@@ -8,16 +8,38 @@
 
 #import "TumblrAppDelegate.h"
 
+#import "AFNetworkActivityIndicatorManager.h"
+
+#import "AFOAuth1Client.h"
+
 @implementation TumblrAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    
+    NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:8 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
+    [NSURLCache setSharedURLCache:URLCache];
+    
+    [[AFNetworkActivityIndicatorManager sharedManager] setEnabled:YES];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
 }
+
+- (BOOL)application:(UIApplication *)application
+openURL:(NSURL *)url
+sourceApplication:(NSString *)sourceApplication
+ annotation:(id)annotation
+{
+    NSNotification *notification = [NSNotification notificationWithName:kAFApplicationLaunchedWithURLNotification object:nil userInfo:[NSDictionary dictionaryWithObject:url forKey:kAFApplicationLaunchOptionsURLKey]];
+    [[NSNotificationCenter defaultCenter] postNotification:notification];
+    
+    return YES;
+}
+
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
